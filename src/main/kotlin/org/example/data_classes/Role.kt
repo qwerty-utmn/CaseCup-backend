@@ -10,7 +10,7 @@ data class Role(
     @SerializedName("role")
     @javax.persistence.Id
     @Column(name="role", nullable = false, columnDefinition = "VARCHAR(45)", unique = true)
-    var role: String,
+    var role: String = "",
     @SerializedName("description")
     @Column(name="description")
     val description: String? = null
