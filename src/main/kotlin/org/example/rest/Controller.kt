@@ -50,6 +50,10 @@ class UserController(private val userService: UserService) {
     @PostMapping("/create")
     fun createRequest(@RequestBody user: User) = userService.add(user)
 
+
+    @GetMapping("/signin")
+    fun createRequest(@RequestParam username: String, @RequestParam password:String) = userService.signInUser(username, password)
+
     @DeleteMapping("{id}")
     fun removeRequest(@PathVariable id:Int) = userService.remove(id)
 }
