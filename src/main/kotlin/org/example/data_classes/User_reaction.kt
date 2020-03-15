@@ -1,6 +1,6 @@
 package org.example.data_classes
 
-import org.apache.catalina.mbeans.UserMBean
+import org.example.data_classes.user.User
 import javax.persistence.*
 
 @Entity

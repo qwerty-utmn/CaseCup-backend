@@ -1,5 +1,6 @@
 package org.example.data_classes
 
+import org.example.data_classes.user.User
 import java.util.*
 import javax.persistence.*
 
@@ -10,32 +11,33 @@ data class Request(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="request_id")
-    val request_id: Int?,
+    val request_id: Int? = 0,
 
     @OneToMany
     @JoinColumn(name="request_id")
-    val comments: Set<Comment>,
+    val comments: Set<Comment>? = null,
 
     @OneToMany
     @JoinColumn(name="request_id")
-    val files: Set<File>,
+    val files: Set<File>? = null,
 
     @Column(name="title")
-    val title: String,
+    val title: String? = null,
 
     @Column(name="description")
-    val description: String,
+    val description: String? = null,
+
 
     @ManyToOne
     @JoinColumn(name="user_id")
-    val creator_id: User,
+    val creator_id: User? = null,
 
     @Column(name="created_datetime")
-    val created_datetime: Date,
+    val created_datetime: Date? = null,
 
     @Column(name="request_status")
-    val request_status: Integer,
+    val request_status: Integer? = null,
 
     @Column(name="category")
-    val category: String
+    val category: String? = null
 )
