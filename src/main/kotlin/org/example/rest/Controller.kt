@@ -6,7 +6,9 @@ import org.example.data_classes.Role
 import org.example.data_classes.user.User
 import org.example.services.RequestService
 import org.example.services.RoleService
+import org.example.services.SecurityUserDetailsService
 import org.example.services.UserService
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
@@ -45,14 +47,14 @@ class UserController(private val userService: UserService) {
     fun getAllRoles() = userService.all()
 
     @GetMapping("{id}")
-    fun getOneUser(@PathVariable id:Int) =userService.getById(id)
+    fun getOneUser(@PathVariable id:Int):ResponseEntity<*>{
+        var user: User? = userService.getById(id) ?: return ResponseEntity.badRequest().body("The user doesn't exist")
+        return ResponseEntity.ok().body(user)
+    }
 
     @PostMapping("/create")
     fun createRequest(@RequestBody user: User) = userService.add(user)
 
-
-    @GetMapping("/signin")
-    fun createRequest(@RequestParam username: String, @RequestParam password:String) = userService.signInUser(username, password)
 
     @DeleteMapping("{id}")
     fun removeRequest(@PathVariable id:Int) = userService.remove(id)
@@ -67,7 +69,10 @@ class RequestController(private val requestService: RequestService) {
     fun getAllRequests() = requestService.all()
 
     @GetMapping("{id}")
-    fun getOneRequest(@PathVariable id:Int) = requestService.getById(id)
+    fun getOneRequest(@PathVariable id:Int):ResponseEntity<*>{
+        var request: Request? = requestService.getById(id) ?: return ResponseEntity.badRequest().body("The request doesn't exist")
+        return ResponseEntity.ok().body(request)
+    }
 
     @PostMapping("/create")
     fun createRequest(@RequestBody request: Request) = requestService.add(request)

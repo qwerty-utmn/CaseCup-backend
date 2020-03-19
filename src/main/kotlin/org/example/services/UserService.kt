@@ -17,7 +17,7 @@ class UserService(private val userRepository: UserRepository) {
 
     fun remove(id:Int) = userRepository.deleteById(id)
 
-    fun getById(id:Int) = userRepository.findByIdOrNull(id)
+    fun getById(id:Int): User? = userRepository.findByIdOrNull(id)
 
     fun signInUser(@Param("username") username: Any, @Param("password") password:Any):User{
 

@@ -14,6 +14,8 @@ interface UserRepository: CrudRepository<User, Int> {
 
     fun deleteByUsername(@Param("username") username: String)
 
+
+
     @Query(value="select u from User as u where u.username = :username and u.password = :password ")
     fun findAndCheckUser(@Param("username") username: String, @Param("password") password:String): User?
 }

@@ -34,11 +34,11 @@ data class User(
     @Column(name="last_name")
     var last_name: String? = null,
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER )
     @JoinColumn(name="role")
     val role: Role? = null,
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="creator_id")
     val requests: Set<Request>? = null
 )
