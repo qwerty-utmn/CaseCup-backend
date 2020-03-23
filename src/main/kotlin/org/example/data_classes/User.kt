@@ -1,0 +1,98 @@
+package org.example.data_classes
+
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import com.fasterxml.jackson.annotation.JsonIgnore
+import org.example.data_classes.Project
+import org.example.data_classes.Role
+import org.hibernate.annotations.NotFound
+import org.hibernate.annotations.NotFoundAction
+import java.lang.Exception
+import javax.persistence.*
+
+@Entity
+@Table(name="users")
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator::class, property="user_id")
+data class User(
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="user_id")
+    var user_id: Int? = null,
+
+
+    @Column(name="username")
+    var username: String? = null,
+
+    @Column(name="password")
+    var password: String? = null,
+
+    @ManyToOne
+    @JoinColumn(name="role")
+    var role: Role? = null,
+
+    @Column(name="name")
+    var name: String? = null,
+
+    @Column(name="surname")
+    var surname: String? = null,
+
+    @Column(name="middlename")
+    var middlename: String? = null,
+
+    //@Column(name="post")
+    //var post: String? = null,
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    var department: Department? = null,
+
+    @Column(name="user_photo")
+    var user_photo: ByteArray? = byteArrayOf(),
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name="creator_id" )
+    @JsonIgnore
+    var projects: Set<Project>? = null,
+
+
+    @OneToMany
+    @JoinColumn(name="user_id")
+    var user_reaction: Set<User_reaction>? = null
+
+
+) {
+
+    fun copy(user:User){
+        if(user.user_id != null) this.user_id = user.user_id
+        if(user.username != null) this.username = user.username
+        if(user.password != null) this.password = user.password
+        if(user.role != null) this.role = user.role
+        if(user.name != null) this.name = user.name
+        if(user.surname != null) this.surname = user.surname
+        if(user.middlename != null) this.middlename = user.middlename
+        if(user.department != null) this.department = user.department
+        if(user.user_photo != null) this.user_photo = user.user_photo
+        if(user.projects != null) this.projects = user.projects
+        if(user.user_reaction != null) this.user_reaction = user.user_reaction
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as User
+
+        if (user_photo != null) {
+            if (other.user_photo == null) return false
+            if (!user_photo!!.contentEquals(other.user_photo!!)) return false
+        } else if (other.user_photo != null) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return user_photo?.contentHashCode() ?: 0
+    }
+}

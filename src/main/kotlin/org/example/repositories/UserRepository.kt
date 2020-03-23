@@ -1,10 +1,9 @@
 package org.example.repositories
 
-import org.example.data_classes.user.User
+import org.example.data_classes.User
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
-import javax.transaction.Transactional
 
 interface UserRepository: CrudRepository<User, Int> {
 

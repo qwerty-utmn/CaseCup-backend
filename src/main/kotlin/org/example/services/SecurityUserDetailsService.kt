@@ -1,6 +1,6 @@
 package org.example.services
 
-import org.example.data_classes.user.User
+import org.example.data_classes.User
 import org.example.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails

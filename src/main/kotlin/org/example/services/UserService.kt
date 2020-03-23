@@ -1,6 +1,8 @@
 package org.example.services
 
-import org.example.data_classes.user.User
+import net.bytebuddy.implementation.bytecode.Throw
+import org.example.data_classes.Project
+import org.example.data_classes.User
 import org.example.repositories.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.data.repository.query.Param
@@ -11,7 +13,7 @@ import java.lang.Exception
 @Service
 class UserService(private val userRepository: UserRepository) {
 
-    fun all(): Iterable<User> = userRepository.findAll()
+    fun all(): MutableIterable<User> = userRepository.findAll()
 
     fun add(user: User) = userRepository.save(user)
 
@@ -19,7 +21,13 @@ class UserService(private val userRepository: UserRepository) {
 
     fun getById(id:Int): User? = userRepository.findByIdOrNull(id)
 
-    fun signInUser(@Param("username") username: Any, @Param("password") password:Any):User{
+    fun edit(id:Int, user: User) {
+        val old_user = userRepository.findByIdOrNull(id) ?: throw Exception("This user doesnt exist!")
+        old_user.copy(user)
+        userRepository.save(old_user)
+    }
+
+    fun signInUser(@Param("username") username: Any, @Param("password") password:Any): User {
 
         val user = userRepository.findAndCheckUser(username.toString(), password.toString())
         return user ?: throw Exception("User doesn't exist")

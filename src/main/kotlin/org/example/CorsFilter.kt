@@ -16,7 +16,7 @@ class CorsFilter : Filter {
         val response = servletResponse as HttpServletResponse
         val request = servletRequest as HttpServletRequest
 
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080") // You should edit this
+        response.setHeader("Access-Control-Allow-Origin", "http://134.122.77.59:8080") //"http://localhost:8080")//
         response.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT,OPTIONS")
         response.setHeader("Access-Control-Allow-Headers", "Content-Type")
         response.setHeader("Access-Control-Allow-Credentials", true.toString())

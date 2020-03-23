@@ -10,14 +10,14 @@ data class File(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="file_id")
-    val file_id: Int?,
+    val file_id: Int? = null,
 
     @Column(name="content")
-    val content: ByteArray,
+    val content: ByteArray? = null,
 
     @ManyToOne
-    @JoinColumn(name="request_id")
-    val request: Request
+    @JoinColumn(name="project_id")
+    val project: Project? = null
 
 
 ) {
@@ -28,16 +28,16 @@ data class File(
         other as File
 
         if (file_id != other.file_id) return false
-        if (!content.contentEquals(other.content)) return false
-        if (request != other.request) return false
+        if (!content!!.contentEquals(other.content!!)) return false
+        if (project != other.project) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = file_id ?: 0
-        result = 31 * result + content.contentHashCode()
-        result = 31 * result + request.hashCode()
+        result = 31 * result + content!!.contentHashCode()
+        result = 31 * result + project.hashCode()
         return result
     }
 }

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest
 
 class JWTAuthenticationFilter : GenericFilterBean() {
     override fun doFilter(request: ServletRequest, response: ServletResponse, filterChain: FilterChain) {
-        val authentication = JWTUtils.getAuthentication(request as HttpServletRequest)
+        val authentication = JWTUtils.getAuthentication(request = request as HttpServletRequest)//JWTUtils.getAuthentication(request as HttpServletRequest)
         SecurityContextHolder.getContext().authentication = authentication
         filterChain.doFilter(request, response)
     }

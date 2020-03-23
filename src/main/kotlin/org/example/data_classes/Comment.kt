@@ -1,5 +1,6 @@
 package org.example.data_classes
 
+import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
@@ -9,14 +10,25 @@ data class Comment(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="comment_id")
-    val comment_id: Int?,
+    var comment_id: Int? = null,
+
+    @Column(name="user_id")
+    var user_id: Int? = null,
+
+    @Column(name="project_id")
+    var project_id: Int? = null,
 
     @Column(name="content")
-    val content: String,
+    var content: String? = null,
 
-    @ManyToOne
-    @JoinColumn(name="request_id")
-    val request: Request
+    @Column(name="created_datetime")
+    var created_datetime: LocalDate? = null
 
-
-)
+    )
+{
+    fun copy(comment:Comment){
+        if(comment.comment_id!= null) this.comment_id = comment.comment_id
+        if(comment.user_id!= null) this.user_id = comment.user_id
+        if(comment.project_id!= null) this.user_id = comment.user_id
+    }
+}

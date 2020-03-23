@@ -1,18 +1,15 @@
 package org.example.rest
 
 import io.swagger.annotations.Api
-import org.example.data_classes.Request
-import org.example.data_classes.Role
-import org.example.data_classes.user.User
-import org.example.services.RequestService
-import org.example.services.RoleService
-import org.example.services.SecurityUserDetailsService
-import org.example.services.UserService
+import org.example.data_classes.*
+import org.example.services.*
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
 @Controller
+@Api(tags = arrayOf("Documentation"))
 class ApiDoc{
     @RequestMapping(value = ["/api"], method = arrayOf(RequestMethod.GET))
     fun api() = "redirect:/api/swagger-ui.html";
@@ -39,7 +36,7 @@ class RolesController(private val roleService: RoleService) {
 
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("users", consumes = arrayOf(MediaType.APPLICATION_JSON_VALUE))
 @Api(tags = arrayOf("User"))
 class UserController(private val userService: UserService) {
 
@@ -55,31 +52,94 @@ class UserController(private val userService: UserService) {
     @PostMapping("/create")
     fun createRequest(@RequestBody user: User) = userService.add(user)
 
+    @PutMapping("{id}")
+    fun updateRequest(@PathVariable id:Int, @RequestBody user: User) = userService.edit(id, user)
 
     @DeleteMapping("{id}")
     fun removeRequest(@PathVariable id:Int) = userService.remove(id)
 }
 
+
 @RestController
-@RequestMapping("requests")
-@Api(tags = arrayOf("Request"))
-class RequestController(private val requestService: RequestService) {
+@RequestMapping("reactions")
+@Api(tags = arrayOf("Reactions"))
+class ReactionController(private val reactionService: UserReactionService){
+
+    @PostMapping("/create")
+    fun createProject(@RequestBody reaction: User_reaction) = reactionService.add(reaction)
+
+}
+
+
+@RestController
+@RequestMapping("projects")
+@Api(tags = arrayOf("Projects"))
+class ProjectController(private val projectService: ProjectService) {
 
     @GetMapping
-    fun getAllRequests() = requestService.all()
+    fun getAllProjects() = projectService.all()
 
     @GetMapping("{id}")
-    fun getOneRequest(@PathVariable id:Int):ResponseEntity<*>{
-        var request: Request? = requestService.getById(id) ?: return ResponseEntity.badRequest().body("The request doesn't exist")
-        return ResponseEntity.ok().body(request)
+    fun getOneProject(@PathVariable id:Int):ResponseEntity<*>{
+        var project: Project? = projectService.getById(id) ?: return ResponseEntity.badRequest().body("The request doesn't exist")
+        return ResponseEntity.ok().body(project)
     }
 
     @PostMapping("/create")
-    fun createRequest(@RequestBody request: Request) = requestService.add(request)
+    fun createProject(@RequestBody project: Project) = projectService.add(project)
 
     @PutMapping("{id}")
-    fun updateRequest(@PathVariable id:Int, request: Request) = requestService.edit(id, request)
+    fun updateProject(@PathVariable id:Int,@RequestBody project: Project) = projectService.edit(id, project)
 
     @DeleteMapping("{id}")
-    fun removeRequest(@PathVariable id:Int) = requestService.remove(id)
+    fun removeProject(@PathVariable id:Int) = projectService.remove(id)
+}
+
+
+@RestController
+@RequestMapping("departments")
+@Api(tags = arrayOf("Departments"))
+class DepartmentController(private val departmentService: DepartmentService) {
+
+    @GetMapping
+    fun getAllDepartments() = departmentService.all()
+
+    @GetMapping("{id}")
+    fun getOneDepartments(@PathVariable id:String):ResponseEntity<*>{
+        var department: Department? = departmentService.getById(id) ?: return ResponseEntity.badRequest().body("The request doesn't exist")
+        return ResponseEntity.ok().body(department)
+    }
+
+    @PostMapping("/create")
+    fun createDepartment(@RequestBody department: Department) = departmentService.add(department)
+
+    @PutMapping("{id}")
+    fun updateDepartment(@PathVariable id:String,@RequestBody department: Department) = departmentService.edit(id, department)
+
+    @DeleteMapping("{id}")
+    fun removeDepartment(@PathVariable id:String) = departmentService.remove(id)
+}
+
+@RestController
+@RequestMapping("comments", consumes = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+@Api(tags = arrayOf("Comment"))
+class CommentController(private val commentService: CommentService) {
+
+    @GetMapping
+    fun getAllComments() = commentService.all()
+
+    @GetMapping("{id}")
+    fun getOneComment(@PathVariable id:Int):ResponseEntity<*>{
+        var comment: Comment? = commentService.getById(id) ?: return ResponseEntity.badRequest().body("The comment doesn't exist")
+        return ResponseEntity.ok().body(comment)
+    }
+
+    @PostMapping("/create")
+    fun createComment(@RequestBody comment: Comment) = commentService.add(comment)
+
+    @PutMapping("{id}")
+    fun updateComment(@PathVariable id:Int,@RequestBody comment: Comment) = commentService.edit(id, comment)
+
+    @DeleteMapping("{id}")
+    fun removeComment(@PathVariable id:Int) = commentService.remove(id)
 }

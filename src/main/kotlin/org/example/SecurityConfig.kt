@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -31,7 +32,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .disable()
             .authorizeRequests()
 //            .antMatcher("/**").authorizeRequests()
-            .antMatchers("/auth", "/users/create").permitAll()
+            .antMatchers("/auth", "/users/create", "/api/**", "/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .addFilterBefore(CorsFilter(), SessionManagementFilter::class.java)
@@ -42,7 +43,9 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
     }
 
-
+    override fun configure(web: WebSecurity?) {
+        web?.ignoring()?.antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**");
+    }
 
     override fun configure(auth: AuthenticationManagerBuilder) {
         auth.userDetailsService(customDetailsService).passwordEncoder(passwordEncoder());

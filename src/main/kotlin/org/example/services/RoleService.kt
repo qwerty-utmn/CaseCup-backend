@@ -1,7 +1,6 @@
 package org.example.services
 
 import org.example.data_classes.Role
-import org.example.data_classes.user.User
 import org.example.repositories.RoleRepository
 import org.springframework.stereotype.Service
 

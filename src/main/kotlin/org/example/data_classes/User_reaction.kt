@@ -1,25 +1,33 @@
 package org.example.data_classes
 
-import org.example.data_classes.user.User
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 import javax.persistence.*
+
+
+class reactionsPK(val user_id: Int? = null, val project_id: Int? = null):Serializable {
+}
+
 
 @Entity
 @Table(name="users_reactions")
+@IdClass(reactionsPK::class)
 data class User_reaction (
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val reaction_id: Int?,
+    @Column(name = "user_id")
+    val user_id: Int? = null,
 
-    @OneToOne
-    @JoinColumn(name="user_id")
-    val user: User,
+    @Id
+    @Column(name = "project_id")
+    val project_id: Int? = null,
 
-    @OneToOne
-    @JoinColumn(name="request_id")
-    val request: Request,
 
     @Column(name="reaction")
-    val reaction: Byte
+    val reaction: Byte? = null
 
-)
+){
+
+}
