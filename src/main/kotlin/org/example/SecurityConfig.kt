@@ -32,7 +32,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
             .disable()
             .authorizeRequests()
 //            .antMatcher("/**").authorizeRequests()
-            .antMatchers("/auth", "/users/create", "/api/**", "/**").permitAll()
+            .antMatchers("/auth", "/users/create", "/api/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .addFilterBefore(CorsFilter(), SessionManagementFilter::class.java)

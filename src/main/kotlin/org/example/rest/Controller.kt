@@ -86,7 +86,11 @@ class ProjectController(private val projectService: ProjectService) {
     }
 
     @PostMapping("/create")
-    fun createProject(@RequestBody project: Project) = projectService.add(project)
+    fun createProject(@RequestBody project: Project)
+    {
+        println(project)
+        projectService.add(project)
+    }
 
     @PutMapping("{id}")
     fun updateProject(@PathVariable id:Int,@RequestBody project: Project) = projectService.edit(id, project)
@@ -143,3 +147,27 @@ class CommentController(private val commentService: CommentService) {
     @DeleteMapping("{id}")
     fun removeComment(@PathVariable id:Int) = commentService.remove(id)
 }
+
+
+@RestController
+@RequestMapping("categories", consumes = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+@Api(tags = arrayOf("Categories"))
+class CategoryController(private val categoryService: CategoryService) {
+
+    @GetMapping
+    fun getAllComments() = categoryService.all()
+
+//    @GetMapping("{id}")
+//    fun getOneComment(@PathVariable category_id:String):ResponseEntity<*>{
+//        var category: Category? = categoryService.getById(category_id) ?: return ResponseEntity.badRequest().body("The comment doesn't exist")
+//        return ResponseEntity.ok().body(comment)
+//    }
+
+    @PostMapping("/create")
+    fun createComment(@RequestBody comment: Category) = categoryService.add(comment)
+
+
+    @DeleteMapping("{id}")
+    fun removeComment(@PathVariable category_id:String) = categoryService.remove(category_id)
+}
+

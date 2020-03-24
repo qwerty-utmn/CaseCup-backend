@@ -44,9 +44,13 @@ data class User(
     //@Column(name="post")
     //var post: String? = null,
 
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    var department: Department? = null,
+//    @ManyToOne
+//    @JoinColumn(name = "department_id")
+//    @JsonIgnore
+//    var department: Department? = null,
+
+    @Column(name="department_id")
+    var department_id: String? = null,
 
     @Column(name="user_photo")
     var user_photo: ByteArray? = byteArrayOf(),
@@ -72,7 +76,7 @@ data class User(
         if(user.name != null) this.name = user.name
         if(user.surname != null) this.surname = user.surname
         if(user.middlename != null) this.middlename = user.middlename
-        if(user.department != null) this.department = user.department
+        if(user.department_id != null) this.department_id = user.department_id
         if(user.user_photo != null) this.user_photo = user.user_photo
         if(user.projects != null) this.projects = user.projects
         if(user.user_reaction != null) this.user_reaction = user.user_reaction
@@ -84,15 +88,38 @@ data class User(
 
         other as User
 
+        if (user_id != other.user_id) return false
+        if (username != other.username) return false
+        if (password != other.password) return false
+        if (role != other.role) return false
+        if (name != other.name) return false
+        if (surname != other.surname) return false
+        if (middlename != other.middlename) return false
+        if (department_id != other.department_id) return false
         if (user_photo != null) {
             if (other.user_photo == null) return false
             if (!user_photo!!.contentEquals(other.user_photo!!)) return false
         } else if (other.user_photo != null) return false
+        if (projects != other.projects) return false
+        if (user_reaction != other.user_reaction) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return user_photo?.contentHashCode() ?: 0
+        var result = user_id ?: 0
+        result = 31 * result + (username?.hashCode() ?: 0)
+        result = 31 * result + (password?.hashCode() ?: 0)
+        result = 31 * result + (role?.hashCode() ?: 0)
+        result = 31 * result + (name?.hashCode() ?: 0)
+        result = 31 * result + (surname?.hashCode() ?: 0)
+        result = 31 * result + (middlename?.hashCode() ?: 0)
+        result = 31 * result + (department_id?.hashCode() ?: 0)
+        result = 31 * result + (user_photo?.contentHashCode() ?: 0)
+        result = 31 * result + (projects?.hashCode() ?: 0)
+        result = 31 * result + (user_reaction?.hashCode() ?: 0)
+        return result
     }
+
+
 }

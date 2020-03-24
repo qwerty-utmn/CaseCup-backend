@@ -16,9 +16,8 @@ class ProjectService(private val projectRepository: ProjectRepository) {
 
     fun edit(id:Int, project: Project){
         var old_project = projectRepository.findByIdOrNull(id) ?: throw Exception("This project doesn't exist")
-        println(old_project)
+
         old_project.copy(project)
-        println(old_project)
         projectRepository.save(old_project)
     }
 

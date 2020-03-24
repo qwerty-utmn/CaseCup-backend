@@ -1,7 +1,6 @@
 package org.example.data_classes
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import com.fasterxml.jackson.annotation.*
 import com.google.gson.annotations.SerializedName
 import org.hibernate.annotations.DynamicUpdate
 import java.lang.Exception
@@ -40,14 +39,20 @@ data class Project(
     var end_datetime: Date? = null,
 
     @Column(name="project_status")
-    var project_status: Int? = null,
+    var project_status: Int? = 0,
 
     @Column(name="price")
     var price: Double? = null,
 
     @SerializedName("category")
     @ManyToMany
-    var categories: Set<Category>? = null,
+    @JoinTable(name = "project_categories",
+        joinColumns = arrayOf(JoinColumn(name = "project_id")),//, referencedColumnName = "category_id")),
+        inverseJoinColumns = arrayOf(JoinColumn(name = "category_id"))//, referencedColumnName = "project_id"))
+    )
+//    @JsonBackReference
+    @JsonIgnoreProperties("projects")
+    var categories: List<Category>? = null,
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="project_id")
@@ -64,13 +69,17 @@ data class Project(
 
 ){
     fun copy(project:Project){
-        this.creator_id = project.creator_id ?: throw Exception("Creator id need for update!")
-        this.project_id = project.project_id ?: throw Exception("Project id need for update!")
+        if(project.creator_id != null) this.creator_id = project.creator_id
+        if(project.project_id != null) this.project_id = project.project_id
         if(project.title != null) this.title = project.title
         if(project.description != null) this.description = project.description
         if(project.start_datetime != null) this.start_datetime = project.start_datetime
         if(project.end_datetime != null) this.end_datetime = project.end_datetime
         if(project.project_status != null) this.project_status = project.project_status
         if(project.price != null) this.price = project.price
+
+        if(project.categories != null) this.categories = project.categories
+//        if(project.comments != null) throw Exception("Пока не сделал для обновления комментариев")//this.categories = project.categories
+//        if(project.files != null) throw Exception("Пока не сделал для обновления файлов")//this.categories = project.categories
     }
 }

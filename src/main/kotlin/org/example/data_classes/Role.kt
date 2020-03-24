@@ -21,7 +21,7 @@ data class Role(
     @Column(name="description")
     val description: String? = null,
 
-    @JsonBackReference
+
     @OneToMany
     @JoinColumn(name="role")
     var users: Set<User>? = null
