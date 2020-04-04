@@ -1,5 +1,4 @@
 package org.example.data_classes
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import com.google.gson.annotations.SerializedName
@@ -26,8 +25,10 @@ data class User_reaction (
 
 
     @Column(name="reaction")
-    val reaction: Byte? = null
+    var reaction: Byte? = null
 
 ){
-
+    fun copy(reaction: User_reaction){
+       this.reaction = reaction.reaction
+    }
 }

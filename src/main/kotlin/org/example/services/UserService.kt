@@ -21,10 +21,13 @@ class UserService(private val userRepository: UserRepository) {
 
     fun getById(id:Int): User? = userRepository.findByIdOrNull(id)
 
-    fun edit(id:Int, user: User) {
+    fun getByUsername(username: String): User? = userRepository.findByUsername(username)
+
+    fun edit(id:Int, user: User):User {
         val old_user = userRepository.findByIdOrNull(id) ?: throw Exception("This user doesnt exist!")
         old_user.copy(user)
         userRepository.save(old_user)
+        return old_user
     }
 
     fun signInUser(@Param("username") username: Any, @Param("password") password:Any): User {

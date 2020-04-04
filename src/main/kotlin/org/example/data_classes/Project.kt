@@ -9,7 +9,6 @@ import java.util.*
 import javax.persistence.*
 
 @Table(name="projects")
-
 @Entity
 @DynamicUpdate
 @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator::class, property="project_id")
@@ -25,12 +24,12 @@ data class Project(
     @Column(name="description")
     var description: String? = null,
 
-//    @ManyToOne
-//    @JoinColumn(name="user_id")
-//    val creator: User? = null,
+    @ManyToOne
+    @JoinColumn(name="creator_id")
+    var creator: User? = null,
 
-    @Column(name = "creator_id")
-    var creator_id: Int? = null,
+//    @Column(name = "creator_id")
+//    var creator_id: Int? = null,
 
     @Column(name="start_datetime")
     var start_datetime: LocalDate? = null,
@@ -69,7 +68,7 @@ data class Project(
 
 ){
     fun copy(project:Project){
-        if(project.creator_id != null) this.creator_id = project.creator_id
+        if(project.creator != null) this.creator = project.creator
         if(project.project_id != null) this.project_id = project.project_id
         if(project.title != null) this.title = project.title
         if(project.description != null) this.description = project.description

@@ -61,4 +61,5 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     fun passwordEncoder(): PasswordEncoder? {
         return BCryptPasswordEncoder()
     }
+
 }

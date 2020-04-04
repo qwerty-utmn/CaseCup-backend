@@ -28,7 +28,7 @@ class JWTLoginFilter internal constructor(url: String, authenticationManager: Au
     override fun attemptAuthentication(req: HttpServletRequest, res: HttpServletResponse): Authentication {
 //        val username: String? = req.getParameter("username")
 //        val password: String? = req.getParameter("password")
-        val user:AccountCredentials = Gson().fromJson(getBody(req), AccountCredentials::class.java)
+        val user:AccountCredentials = Gson().fromJson(JWTUtils.getBody(req), AccountCredentials::class.java)
         val authenticationToken = UsernamePasswordAuthenticationToken(user.username, user.password, emptyList<GrantedAuthority>())
         return authenticationManager.authenticate(authenticationToken)
 }
@@ -40,29 +40,5 @@ class JWTLoginFilter internal constructor(url: String, authenticationManager: Au
     }
 
 
-    private fun getBody(req: HttpServletRequest): String? {
-        var body = ""
-        if (req.getMethod().equals("POST")) {
-            val sb = StringBuilder()
-            var bufferedReader: BufferedReader? = null
-            try {
-                bufferedReader = req.getReader()
-                val charBuffer = CharArray(128)
-                var bytesRead: Int
-                while (bufferedReader.read(charBuffer).also { bytesRead = it } != -1) {
-                    sb.append(charBuffer, 0, bytesRead)
-                }
-            } catch (ex: IOException) { // swallow silently -- can't get body, won't
-            } finally {
-                if (bufferedReader != null) {
-                    try {
-                        bufferedReader.close()
-                    } catch (ex: IOException) { // swallow silently -- can't get body, won't
-                    }
-                }
-            }
-            body = sb.toString()
-        }
-        return body
-    }
+
 }

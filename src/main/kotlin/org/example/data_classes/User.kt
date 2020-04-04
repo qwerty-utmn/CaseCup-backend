@@ -25,6 +25,7 @@ data class User(
     @Column(name="username")
     var username: String? = null,
 
+    @JsonIgnore
     @Column(name="password")
     var password: String? = null,
 
@@ -55,8 +56,9 @@ data class User(
     @Column(name="user_photo")
     var user_photo: ByteArray? = byteArrayOf(),
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name="creator_id" )
+    @OneToMany
+    @JoinColumn(name="user_id" )
+//    @JsonBackReference
     @JsonIgnore
     var projects: Set<Project>? = null,
 

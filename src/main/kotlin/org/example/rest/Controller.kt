@@ -2,11 +2,15 @@ package org.example.rest
 
 import io.swagger.annotations.Api
 import org.example.data_classes.*
+import org.example.jwt.JWTUtils
 import org.example.services.*
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
+import java.lang.Exception
+import javax.servlet.ServletRequest
+import javax.servlet.http.HttpServletRequest
 
 @Controller
 @Api(tags = arrayOf("Documentation"))
@@ -49,6 +53,13 @@ class UserController(private val userService: UserService) {
         return ResponseEntity.ok().body(user)
     }
 
+    @PostMapping("/by_token")
+    fun getUserByToken(req: ServletRequest):User{
+        val usernameFromToken = JWTUtils.getUserNameByToken(req as HttpServletRequest)
+        val user = userService.getByUsername(usernameFromToken) ?: throw Exception("Such user doesn't exist")
+        return user
+    }
+
     @PostMapping("/create")
     fun createRequest(@RequestBody user: User) = userService.add(user)
 
@@ -66,8 +77,13 @@ class UserController(private val userService: UserService) {
 class ReactionController(private val reactionService: UserReactionService){
 
     @PostMapping("/create")
-    fun createProject(@RequestBody reaction: User_reaction) = reactionService.add(reaction)
+    fun createReaction(@RequestBody reaction: User_reaction) = reactionService.add(reaction)
 
+    @PutMapping("/update")
+    fun updateReaction(@RequestBody reaction: User_reaction) = reactionService.edit(reaction)
+
+    @DeleteMapping("/remove")
+    fun deleteReaction(@RequestBody primaryReaction: reactionsPK) = reactionService.remove(primaryReaction)
 }
 
 
@@ -78,6 +94,10 @@ class ProjectController(private val projectService: ProjectService) {
 
     @GetMapping
     fun getAllProjects() = projectService.all()
+
+    @GetMapping("/by")
+    fun getProjects(@RequestParam filter: String, @RequestParam sort:String, @RequestParam(required = false) search:String?) = projectService.allWithFilter(filter, sort, search)
+
 
     @GetMapping("{id}")
     fun getOneProject(@PathVariable id:Int):ResponseEntity<*>{
