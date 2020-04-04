@@ -93,10 +93,15 @@ class ReactionController(private val reactionService: UserReactionService){
 class ProjectController(private val projectService: ProjectService) {
 
     @GetMapping
-    fun getAllProjects() = projectService.all()
+    fun getAllProjects(): Iterable<Project> = projectService.all()
+
 
     @GetMapping("/by")
-    fun getProjects(@RequestParam filter: String, @RequestParam sort:String, @RequestParam(required = false) search:String?) = projectService.allWithFilter(filter, sort, search)
+    fun getProjects(@RequestParam filter: String, @RequestParam sort:String, @RequestParam(required = false) search:String?): Iterable<Project>
+    {
+        val projects = projectService.allWithFilter(filter, sort, search)
+        return projects
+    }
 
 
     @GetMapping("{id}")

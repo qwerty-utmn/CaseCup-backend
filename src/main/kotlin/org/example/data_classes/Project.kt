@@ -2,7 +2,11 @@ package org.example.data_classes
 
 import com.fasterxml.jackson.annotation.*
 import com.google.gson.annotations.SerializedName
+import org.example.repositories.ProjectRepository
 import org.hibernate.annotations.DynamicUpdate
+import org.hibernate.annotations.Formula
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import java.lang.Exception
 import java.time.LocalDate
 import java.util.*
@@ -64,7 +68,13 @@ data class Project(
 
     @OneToMany
     @JoinColumn(name="project_id")
-    var project_reaction: Set<User_reaction>? = null
+    var project_reaction: Set<User_reaction>? = null,
+
+    @Transient
+    var likes: Int? = 0,
+
+    @Transient
+    var dislikes: Int? = 0
 
 ){
     fun copy(project:Project){
