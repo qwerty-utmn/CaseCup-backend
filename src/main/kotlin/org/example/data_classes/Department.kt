@@ -1,9 +1,6 @@
 package org.example.data_classes
 
-import com.fasterxml.jackson.annotation.JsonBackReference
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
-import com.fasterxml.jackson.annotation.JsonManagedReference
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import com.fasterxml.jackson.annotation.*
 import com.google.gson.annotations.SerializedName
 import net.minidev.json.annotate.JsonIgnore
 import org.hibernate.annotations.GenericGenerator
@@ -12,6 +9,7 @@ import javax.persistence.*
 
 @Entity
 @Table(name="departments")
+@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator::class, property="department_id")
 data class Department(
 
     @SerializedName("department_id")
@@ -25,5 +23,7 @@ data class Department(
 
     @OneToMany
     @JoinColumn(name="department_id")
+    @JsonIgnoreProperties("department")
+//    @JsonIgnore
     var users: Set<User>? = null
 )

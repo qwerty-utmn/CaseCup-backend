@@ -1,6 +1,7 @@
 package org.example.services
 
 import org.example.data_classes.Project
+import org.example.data_classes.User
 import org.example.repositories.ProjectRepository
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
@@ -21,21 +22,65 @@ class ProjectService(private val projectRepository: ProjectRepository) {
     }
 
 
+    private fun SortByLikesDislikes(filterField: String, sort: String,searchString: String?): Iterable<Project>{
+        val projects =  if(searchString != "" && searchString != null){
+            when(sort.toLowerCase()) {
+                "desc" -> projectRepository.selectAllLikeStr(filterField).sortedBy{
+//                    val pr = addLikesAndDislikes(it)
+                    when(filterField){
+                        "likes" -> addLikesAndDislikes(it).likes
+                        else -> addLikesAndDislikes(it).dislikes
+                    }
+                }
+                else -> projectRepository.selectAllLikeStr(filterField).sortedByDescending  {
+                    when(filterField){
+                        "likes" -> addLikesAndDislikes(it).likes
+                        else -> addLikesAndDislikes(it).dislikes
+                    }
+                }
+            }
+        }
+        else{
+            when(sort.toLowerCase()) {
+                "desc" -> projectRepository.findAll().sortedBy {
+                    when(filterField){
+                        "likes" -> addLikesAndDislikes(it).likes
+                        else -> addLikesAndDislikes(it).dislikes
+                    }
+                }
+                else ->projectRepository.findAll().sortedByDescending {
+                    when(filterField){
+                        "likes" -> addLikesAndDislikes(it).likes
+                        else -> addLikesAndDislikes(it).dislikes
+                    }
+                }
+            }
+        }
+        return projects
+    }
+
     fun allWithFilter(filterField: String, sort: String,searchString: String?): Iterable<Project>{
         var projects: Iterable<Project>?
-        projects = if(searchString != "" && searchString != null){
-            val search = "%$searchString%"
-            when(sort.toLowerCase()) {
-                "desc" -> projectRepository.selectWithFilter(Sort.by(Sort.Direction.ASC, filterField), search)
-                else ->projectRepository.selectWithFilter(Sort.by(Sort.Direction.DESC, filterField), search)
-            }
-        } else
-            when(sort.toLowerCase()) {
-                "desc" -> projectRepository.selectWithFilterWithoutSearchStr(Sort.by(Sort.Direction.ASC, filterField))
-                else ->projectRepository.selectWithFilterWithoutSearchStr(Sort.by(Sort.Direction.DESC, filterField))
-            }
 
-        return addLikesAndDislikes(projects)
+        if(filterField.toLowerCase() == "likes" || filterField.toLowerCase() == "dislikes" ){
+            projects = SortByLikesDislikes(filterField.toLowerCase(),sort, searchString )
+        }
+        else{
+            projects = if(searchString != "" && searchString != null){
+                val search = "%$searchString%"
+
+                when(sort.toLowerCase()) {
+                    "desc" -> projectRepository.selectWithFilter(Sort.by(Sort.Direction.ASC, filterField), search)
+                    else ->projectRepository.selectWithFilter(Sort.by(Sort.Direction.DESC, filterField), search)
+                }
+            } else
+                when(sort.toLowerCase()) {
+                    "desc" -> projectRepository.selectWithFilterWithoutSearchStr(Sort.by(Sort.Direction.ASC, filterField))
+                    else ->projectRepository.selectWithFilterWithoutSearchStr(Sort.by(Sort.Direction.DESC, filterField))
+                }
+            projects = addLikesAndDislikes(projects)
+        }
+        return projects
     }
 
     fun add(project: Project) = projectRepository.save(project)
@@ -52,6 +97,22 @@ class ProjectService(private val projectRepository: ProjectRepository) {
     fun remove(id:Int) = projectRepository.deleteById(id)
 
 //    fun getLikes(id:Int) = projectRepository.likesByProjectId(id)
+
+
+    fun addMemberInProject(project_id:Int, user: User):Project{
+        var old_project = projectRepository.findByIdOrNull(project_id) ?: throw Exception("This project doesn't exist")
+        old_project.project_members?.add(user)
+        projectRepository.save(old_project)
+        return addLikesAndDislikes(old_project)
+    }
+
+    fun removeMemberFromProject(project_id:Int, user: User):Project{
+        var old_project = projectRepository.findByIdOrNull(project_id) ?: throw Exception("This project doesn't exist")
+        old_project.project_members?.remove(user)
+        projectRepository.save(old_project)
+        return addLikesAndDislikes(old_project)
+    }
+
 
 
     private fun addLikesAndDislikes(projects: Iterable<Project>):Iterable<Project>{

@@ -4,13 +4,19 @@ import io.swagger.annotations.Api
 import org.example.data_classes.*
 import org.example.jwt.JWTUtils
 import org.example.services.*
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
+import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
-import java.lang.Exception
+import org.springframework.web.multipart.MultipartFile
+import java.io.File
+import javax.servlet.ServletContext
 import javax.servlet.ServletRequest
 import javax.servlet.http.HttpServletRequest
+
 
 @Controller
 @Api(tags = arrayOf("Documentation"))
@@ -68,6 +74,9 @@ class UserController(private val userService: UserService) {
 
     @DeleteMapping("{id}")
     fun removeRequest(@PathVariable id:Int) = userService.remove(id)
+
+    @GetMapping("/{id}/projects")
+    fun getProjects(@PathVariable id:Int) = userService.getAllProjectByUserId(id)
 }
 
 
@@ -122,6 +131,12 @@ class ProjectController(private val projectService: ProjectService) {
 
     @DeleteMapping("{id}")
     fun removeProject(@PathVariable id:Int) = projectService.remove(id)
+
+    @PostMapping("/{project_id}/add_member")
+    fun addMember(@PathVariable project_id:Int, @RequestBody member: User) = projectService.addMemberInProject(project_id, member)
+
+    @DeleteMapping("/{project_id}/remove_member")
+    fun removeMember(@PathVariable project_id:Int, @RequestBody member: User) = projectService.removeMemberFromProject(project_id, member)
 }
 
 
@@ -148,6 +163,78 @@ class DepartmentController(private val departmentService: DepartmentService) {
     @DeleteMapping("{id}")
     fun removeDepartment(@PathVariable id:String) = departmentService.remove(id)
 }
+
+
+@RestController
+@RequestMapping("file")
+@Api(tags= arrayOf("Files"))
+class FileController(private val fileService: FileService){
+
+//    @Autowired
+//    private val request: HttpServletRequest? = null
+    @Autowired
+    var context: ServletContext? = null
+
+    @Autowired
+    private val env: Environment? = null
+    val uploadsDir = "/files/"
+
+
+    @PostMapping("/create")
+    fun createFile(@RequestPart("file") files: List<MultipartFile>, @RequestPart(value="file_info") fileInfo:org.example.data_classes.File){
+        if(!files.isEmpty()){
+
+            //env?.getProperty("upload.path")
+            val realPathUploads = context!!.getRealPath(uploadsDir)
+            if(!File(realPathUploads!!).exists()){
+                File(realPathUploads).mkdir()
+            }
+            println("Путь $realPathUploads")
+            files.forEach{
+
+                val filePath = realPathUploads + it.originalFilename
+                val file = File(filePath)
+                it.transferTo(file)
+
+                fileInfo.file_name = it.originalFilename
+                fileService.add(fileInfo)
+            }
+        }
+
+    }
+
+    @GetMapping("/by")
+    fun getFilesByProjectId(@RequestParam project_id:Int)  = fileService.getFiles(project_id)
+
+//        val listFiles: MutableList<String> = mutableListOf()
+//        filesInfo.forEach{
+//            //val file = File(realPathUploads+it.file_name)
+//            listFiles.add(//InputStreamResource(FileInputStream(file)))
+//        }
+//        val headers = HttpHeaders()
+//        headers["Content-Type"] = "multipart/form-data"
+
+
+
+
+    @PostMapping
+    fun getFile(@RequestBody file: org.example.data_classes.File): ResponseEntity<*>{
+        val realPathUploads = context!!.getRealPath(uploadsDir)
+        val path = realPathUploads+file.file_name
+        val send_file = File(path )
+
+        println("path - $path")
+        println("file name - ${send_file.name}")
+        return ResponseEntity
+            .ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${send_file.name}\"")
+            .body(send_file)
+    }
+
+    @GetMapping("/all")
+    fun getAllFiles() = fileService.getAll()
+}
+
 
 @RestController
 @RequestMapping("comments", consumes = arrayOf(MediaType.APPLICATION_JSON_VALUE))
@@ -180,7 +267,7 @@ class CommentController(private val commentService: CommentService) {
 class CategoryController(private val categoryService: CategoryService) {
 
     @GetMapping
-    fun getAllComments() = categoryService.all()
+    fun getAllCategory() = categoryService.all()
 
 //    @GetMapping("{id}")
 //    fun getOneComment(@PathVariable category_id:String):ResponseEntity<*>{
@@ -189,10 +276,10 @@ class CategoryController(private val categoryService: CategoryService) {
 //    }
 
     @PostMapping("/create")
-    fun createComment(@RequestBody comment: Category) = categoryService.add(comment)
+    fun createCategory(@RequestBody category: Category) = categoryService.add(category)
 
 
     @DeleteMapping("{id}")
-    fun removeComment(@PathVariable category_id:String) = categoryService.remove(category_id)
+    fun removeCategory(@PathVariable category_id:String) = categoryService.remove(category_id)
 }
 

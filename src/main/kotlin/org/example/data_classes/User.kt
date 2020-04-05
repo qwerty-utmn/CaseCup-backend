@@ -1,10 +1,6 @@
 package org.example.data_classes
 
-import com.fasterxml.jackson.annotation.JsonBackReference
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
-import com.fasterxml.jackson.annotation.JsonManagedReference
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
-import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.*
 import org.example.data_classes.Project
 import org.example.data_classes.Role
 import org.hibernate.annotations.NotFound
@@ -14,7 +10,6 @@ import javax.persistence.*
 
 @Entity
 @Table(name="users")
-@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator::class, property="user_id")
 data class User(
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -45,13 +40,13 @@ data class User(
     //@Column(name="post")
     //var post: String? = null,
 
-//    @ManyToOne
-//    @JoinColumn(name = "department_id")
-//    @JsonIgnore
-//    var department: Department? = null,
-
-    @Column(name="department_id")
-    var department_id: String? = null,
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    @JsonIgnoreProperties("description", "users")
+    var department: Department? = null,
+//
+//    @Column(name="department_id")
+//    var department_id: String? = null,
 
     @Column(name="user_photo")
     var user_photo: ByteArray? = byteArrayOf(),
@@ -65,10 +60,19 @@ data class User(
 
     @OneToMany
     @JoinColumn(name="user_id")
-    var user_reaction: Set<User_reaction>? = null
+    var user_reactions: Set<User_reaction>? = null,
+
+    @ManyToMany(mappedBy = "project_members")
+    @JsonIgnore
+    val involved_projects: List<Project>? = null,//listOf()
+
+    @OneToMany
+    @JoinColumn(name="user_id")
+    @JsonIgnore
+    var comments: Set<Comment>? = null
 
 
-) {
+    ) {
 
     fun copy(user:User){
         if(user.user_id != null) this.user_id = user.user_id
@@ -78,10 +82,10 @@ data class User(
         if(user.name != null) this.name = user.name
         if(user.surname != null) this.surname = user.surname
         if(user.middlename != null) this.middlename = user.middlename
-        if(user.department_id != null) this.department_id = user.department_id
+        if(user.department != null) this.department = user.department
         if(user.user_photo != null) this.user_photo = user.user_photo
         if(user.projects != null) this.projects = user.projects
-        if(user.user_reaction != null) this.user_reaction = user.user_reaction
+        if(user.user_reactions != null) this.user_reactions = user.user_reactions
     }
 
     override fun equals(other: Any?): Boolean {
@@ -97,13 +101,13 @@ data class User(
         if (name != other.name) return false
         if (surname != other.surname) return false
         if (middlename != other.middlename) return false
-        if (department_id != other.department_id) return false
+        if (department != other.department) return false
         if (user_photo != null) {
             if (other.user_photo == null) return false
             if (!user_photo!!.contentEquals(other.user_photo!!)) return false
         } else if (other.user_photo != null) return false
         if (projects != other.projects) return false
-        if (user_reaction != other.user_reaction) return false
+        if (user_reactions != other.user_reactions) return false
 
         return true
     }
@@ -116,10 +120,10 @@ data class User(
         result = 31 * result + (name?.hashCode() ?: 0)
         result = 31 * result + (surname?.hashCode() ?: 0)
         result = 31 * result + (middlename?.hashCode() ?: 0)
-        result = 31 * result + (department_id?.hashCode() ?: 0)
+        result = 31 * result + (department?.hashCode() ?: 0)
         result = 31 * result + (user_photo?.contentHashCode() ?: 0)
         result = 31 * result + (projects?.hashCode() ?: 0)
-        result = 31 * result + (user_reaction?.hashCode() ?: 0)
+        result = 31 * result + (user_reactions?.hashCode() ?: 0)
         return result
     }
 

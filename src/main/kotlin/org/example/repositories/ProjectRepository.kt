@@ -25,6 +25,9 @@ public interface ProjectRepository: CrudRepository<Project, Int> {
     @Query(nativeQuery = true, value = "SELECT dislikes_by_project_id(:id)")
     public fun dislikesByProjectId(@Param("id") project_id: Int):Int
 
+
+    @Query(value = "select pr from Project as pr where pr.title like :searchString ")
+    fun selectAllLikeStr(@Param("searchString") searchString: String):Iterable<Project>
 //    @Query(value = "select pr from Project as pr order by :filterField asc ")
 //    fun selectWithFilterWithoutSearchStrASC(@Param("filterField") filterField: String):Iterable<Project>
 //

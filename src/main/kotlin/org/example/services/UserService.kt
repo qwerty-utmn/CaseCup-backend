@@ -1,6 +1,5 @@
 package org.example.services
 
-import net.bytebuddy.implementation.bytecode.Throw
 import org.example.data_classes.Project
 import org.example.data_classes.User
 import org.example.repositories.UserRepository
@@ -28,6 +27,16 @@ class UserService(private val userRepository: UserRepository) {
         old_user.copy(user)
         userRepository.save(old_user)
         return old_user
+    }
+
+    fun getAllProjectByUserId(id:Int):Iterable<Project> {
+        val user = User(user_id = id)
+        val projects = userRepository.findProjectsByUserId(user)
+        projects.map { e ->
+            e.likes = userRepository.likesByProjectId(e.project_id!!)
+            e.dislikes = userRepository.dislikesByProjectId(e.project_id!!)
+        }
+        return projects
     }
 
     fun signInUser(@Param("username") username: Any, @Param("password") password:Any): User {

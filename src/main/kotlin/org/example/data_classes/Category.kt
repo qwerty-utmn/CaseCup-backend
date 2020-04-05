@@ -22,6 +22,7 @@ data class Category(
 
 
     @ManyToMany(mappedBy = "categories")
+    @JsonIgnoreProperties("categories", "creator")
     val projects: List<Project>? = null//listOf()
 
 )

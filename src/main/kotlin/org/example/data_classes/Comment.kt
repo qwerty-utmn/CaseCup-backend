@@ -1,5 +1,9 @@
 package org.example.data_classes
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import net.minidev.json.annotate.JsonIgnore
 import java.time.LocalDate
 import javax.persistence.*
 
@@ -12,8 +16,13 @@ data class Comment(
     @Column(name="comment_id")
     var comment_id: Int? = null,
 
-    @Column(name="user_id")
-    var user_id: Int? = null,
+//    @Column(name="user_id")
+//    var user_id: Int? = null,
+
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    @JsonIgnoreProperties("user_reactions", "department")
+    var user: User? = null,
 
     @Column(name="project_id")
     var project_id: Int? = null,
@@ -28,7 +37,7 @@ data class Comment(
 {
     fun copy(comment:Comment){
         if(comment.comment_id!= null) this.comment_id = comment.comment_id
-        if(comment.user_id!= null) this.user_id = comment.user_id
-        if(comment.project_id!= null) this.user_id = comment.user_id
+        if(comment.user!= null) this.user = comment.user
+        if(comment.project_id!= null) this.project_id = comment.project_id
     }
 }

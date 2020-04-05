@@ -57,14 +57,21 @@ data class Project(
     @JsonIgnoreProperties("projects")
     var categories: List<Category>? = null,
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany
     @JoinColumn(name="project_id")
-    var comments: Set<Comment>? = null,
+//    @JsonIgnoreProperties("user", "project_id")
+    var comments: List<Comment>? = null,
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="project_id")
     var files: Set<File>? = null,
 
+    @ManyToMany
+    @JoinTable(name = "project_members",
+        joinColumns = arrayOf(JoinColumn(name = "project_id")),//, referencedColumnName = "category_id")),
+        inverseJoinColumns = arrayOf(JoinColumn(name = "user_id"))//, referencedColumnName = "project_id"))
+    )
+    var project_members: MutableList<User>? = mutableListOf<User>(),
 
     @OneToMany
     @JoinColumn(name="project_id")
