@@ -62,9 +62,10 @@ data class User(
     @JoinColumn(name="user_id")
     var user_reactions: Set<User_reaction>? = null,
 
-    @ManyToMany(mappedBy = "project_members")
+    @OneToMany
+    @JoinColumn(name="user_id")
     @JsonIgnore
-    val involved_projects: List<Project>? = null,//listOf()
+    val involved_projects: List<ProjectMembers>? = null,//listOf()
 
     @OneToMany
     @JoinColumn(name="user_id")

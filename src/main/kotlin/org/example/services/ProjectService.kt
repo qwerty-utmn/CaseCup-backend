@@ -1,7 +1,9 @@
 package org.example.services
 
 import org.example.data_classes.Project
+import org.example.data_classes.ProjectMembers
 import org.example.data_classes.User
+import org.example.repositories.ProjectMemberRepository
 import org.example.repositories.ProjectRepository
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
@@ -9,11 +11,12 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Service
 import java.lang.Exception
 import java.lang.StringBuilder
+import java.net.URLDecoder
 import javax.persistence.OrderBy
 
 
 @Service
-class ProjectService(private val projectRepository: ProjectRepository) {
+class ProjectService(private val projectRepository: ProjectRepository, private val projectMemberRepository: ProjectMemberRepository) {
 
     fun all(): Iterable<Project> {
         val projects = projectRepository.findAll()
@@ -24,15 +27,16 @@ class ProjectService(private val projectRepository: ProjectRepository) {
 
     private fun SortByLikesDislikes(filterField: String, sort: String,searchString: String?): Iterable<Project>{
         val projects =  if(searchString != "" && searchString != null){
+            val search = "%${URLDecoder.decode(searchString, "UTF-8")}%"
             when(sort.toLowerCase()) {
-                "desc" -> projectRepository.selectAllLikeStr(filterField).sortedBy{
+                "desc" -> projectRepository.selectAllLikeStr(search).sortedBy{
 //                    val pr = addLikesAndDislikes(it)
                     when(filterField){
                         "likes" -> addLikesAndDislikes(it).likes
                         else -> addLikesAndDislikes(it).dislikes
                     }
                 }
-                else -> projectRepository.selectAllLikeStr(filterField).sortedByDescending  {
+                else -> projectRepository.selectAllLikeStr(search).sortedByDescending  {
                     when(filterField){
                         "likes" -> addLikesAndDislikes(it).likes
                         else -> addLikesAndDislikes(it).dislikes
@@ -67,7 +71,7 @@ class ProjectService(private val projectRepository: ProjectRepository) {
         }
         else{
             projects = if(searchString != "" && searchString != null){
-                val search = "%$searchString%"
+                val search = "%${URLDecoder.decode(searchString, "UTF-8")}%"
 
                 when(sort.toLowerCase()) {
                     "desc" -> projectRepository.selectWithFilter(Sort.by(Sort.Direction.ASC, filterField), search)
@@ -83,7 +87,7 @@ class ProjectService(private val projectRepository: ProjectRepository) {
         return projects
     }
 
-    fun add(project: Project) = projectRepository.save(project)
+    fun add(project: Project):Project = projectRepository.save(project)
 
     fun edit(id:Int, project: Project):Project{
         var old_project = projectRepository.findByIdOrNull(id) ?: throw Exception("This project doesn't exist")
@@ -99,17 +103,20 @@ class ProjectService(private val projectRepository: ProjectRepository) {
 //    fun getLikes(id:Int) = projectRepository.likesByProjectId(id)
 
 
-    fun addMemberInProject(project_id:Int, user: User):Project{
+    fun addMemberInProject(project_id:Int, user: ProjectMembers):Project{
+
+        projectMemberRepository.save(user)
+
         var old_project = projectRepository.findByIdOrNull(project_id) ?: throw Exception("This project doesn't exist")
-        old_project.project_members?.add(user)
-        projectRepository.save(old_project)
+//        old_project.project_members?.add(user)
+//        projectRepository.save(old_project)
         return addLikesAndDislikes(old_project)
     }
 
-    fun removeMemberFromProject(project_id:Int, user: User):Project{
+    fun removeMemberFromProject(project_id:Int, user: ProjectMembers):Project{
+        projectMemberRepository.delete(user)
+
         var old_project = projectRepository.findByIdOrNull(project_id) ?: throw Exception("This project doesn't exist")
-        old_project.project_members?.remove(user)
-        projectRepository.save(old_project)
         return addLikesAndDislikes(old_project)
     }
 

@@ -120,10 +120,10 @@ class ProjectController(private val projectService: ProjectService) {
     }
 
     @PostMapping("/create")
-    fun createProject(@RequestBody project: Project)
+    fun createProject(@RequestBody project: Project):Project
     {
         println(project)
-        projectService.add(project)
+        return projectService.add(project)
     }
 
     @PutMapping("{id}")
@@ -133,10 +133,10 @@ class ProjectController(private val projectService: ProjectService) {
     fun removeProject(@PathVariable id:Int) = projectService.remove(id)
 
     @PostMapping("/{project_id}/add_member")
-    fun addMember(@PathVariable project_id:Int, @RequestBody member: User) = projectService.addMemberInProject(project_id, member)
+    fun addMember(@PathVariable project_id:Int, @RequestBody member: ProjectMembers) = projectService.addMemberInProject(project_id, member)
 
     @DeleteMapping("/{project_id}/remove_member")
-    fun removeMember(@PathVariable project_id:Int, @RequestBody member: User) = projectService.removeMemberFromProject(project_id, member)
+    fun removeMember(@PathVariable project_id:Int, @RequestBody member: ProjectMembers) = projectService.removeMemberFromProject(project_id, member)
 }
 
 

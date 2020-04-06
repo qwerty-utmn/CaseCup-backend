@@ -66,12 +66,16 @@ data class Project(
     @JoinColumn(name="project_id")
     var files: Set<File>? = null,
 
-    @ManyToMany
-    @JoinTable(name = "project_members",
-        joinColumns = arrayOf(JoinColumn(name = "project_id")),//, referencedColumnName = "category_id")),
-        inverseJoinColumns = arrayOf(JoinColumn(name = "user_id"))//, referencedColumnName = "project_id"))
-    )
-    var project_members: MutableList<User>? = mutableListOf<User>(),
+//    @ManyToMany
+//    @JoinTable(name = "project_members",
+//        joinColumns = arrayOf(JoinColumn(name = "project_id")),//, referencedColumnName = "category_id")),
+//        inverseJoinColumns = arrayOf(JoinColumn(name = "user_id"))//, referencedColumnName = "project_id"))
+//    )
+//    var project_members: MutableList<User>? = mutableListOf<User>(),
+
+    @OneToMany
+    @JoinColumn(name="project_id")
+    val project_members: MutableList<ProjectMembers>? = mutableListOf(),
 
     @OneToMany
     @JoinColumn(name="project_id")
@@ -81,7 +85,10 @@ data class Project(
     var likes: Int? = 0,
 
     @Transient
-    var dislikes: Int? = 0
+    var dislikes: Int? = 0,
+
+    @Column(name="is_blocked")
+    var is_blocked: Boolean? = false
 
 ){
     fun copy(project:Project){
@@ -95,6 +102,7 @@ data class Project(
         if(project.price != null) this.price = project.price
 
         if(project.categories != null) this.categories = project.categories
+        if(project.is_blocked != null) this.is_blocked = project.is_blocked
 //        if(project.comments != null) throw Exception("Пока не сделал для обновления комментариев")//this.categories = project.categories
 //        if(project.files != null) throw Exception("Пока не сделал для обновления файлов")//this.categories = project.categories
     }
