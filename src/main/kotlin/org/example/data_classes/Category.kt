@@ -9,7 +9,6 @@ import javax.persistence.Table
 
 @Entity
 @Table(name="categories")
-@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator::class, property="category_id")
 data class Category(
     @SerializedName("category_id")
     @javax.persistence.Id
